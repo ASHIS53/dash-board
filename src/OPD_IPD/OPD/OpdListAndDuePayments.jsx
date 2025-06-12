@@ -1,8 +1,12 @@
+"use client";
+
 import { useState, useMemo } from "react";
 import axios from "axios";
 import { AgGridReact } from "ag-grid-react";
-import "ag-grid-community/styles/ag-grid.css";
-import "ag-grid-community/styles/ag-theme-alpine.css";
+
+// ✅ Import AG Grid styles
+import "ag-grid-community/styles/ag-theme-quartz.css"; // ✅ Theme
+
 import { AllCommunityModule, ModuleRegistry } from "ag-grid-community";
 
 // Register all Community features
@@ -76,9 +80,18 @@ const OpdListAndDuePayments = () => {
     }));
   }, [rowData]);
 
+  const defaultColDef = {
+    editable: false,
+    filter: true,
+    sortable: true,
+    resizable: true,
+    minWidth: 100,
+    flex: 1,
+  };
+
   return (
     <div className="min-h-screen px-6 py-8 bg-gradient-to-br from-sky-300 via-blue-500 to-indigo-700 text-white transition-all duration-300">
-      <h2 className="text-3xl font-bold mb-6  drop-shadow-md">
+      <h2 className="text-3xl font-bold mb-6 drop-shadow-md">
         OPD {form.viewType === "list" ? "List" : "Due Payments"}
       </h2>
 
@@ -160,15 +173,16 @@ const OpdListAndDuePayments = () => {
       {/* Error */}
       {error && <p className="text-red-300 mt-4 font-semibold">{error}</p>}
 
-      {/* AG Grid - Show only after data is fetched */}
+      {/* AG Grid */}
       {dataFetched && rowData.length > 0 && (
         <div
-          className="ag-theme-alpine mt-8 rounded-lg shadow-lg bg-white"
+          className="ag-theme-quartz mt-8 rounded-lg shadow-lg"
           style={{ height: 500, width: "100%" }}
         >
           <AgGridReact
             rowData={rowData}
             columnDefs={columnDefs}
+            defaultColDef={defaultColDef}
             pagination={true}
             paginationPageSize={10}
             paginationPageSizeSelector={[10, 20, 50, 100]}
@@ -176,6 +190,8 @@ const OpdListAndDuePayments = () => {
           />
         </div>
       )}
+
+      {/* Optional: Custom resize handle styling (only if still needed) */}
     </div>
   );
 };

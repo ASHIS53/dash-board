@@ -10,7 +10,9 @@
 @import '../node_modules/@syncfusion/ej2-splitbuttons/styles/material.css';
 @import '../node_modules/@syncfusion/ej2-notifications/styles/material.css';
 @import "../node_modules/@syncfusion/ej2-react-grids/styles/material.css";
-:root {
+
+
+/* :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
@@ -24,13 +26,13 @@
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 
-}
+} */
 
-a {
+/* a {
   font-weight: 500;
-  /* color: #646cff; */
+ 
   text-decoration: inherit;
-}
+} */
 
 /* a:hover {
   color: #535bf2;
@@ -38,10 +40,10 @@ a {
 
 
 
-h1 {
+/* h1 {
   font-size: 3.2em;
   line-height: 1.1;
-}
+} */
 
 /* button {
   border-radius: 8px;

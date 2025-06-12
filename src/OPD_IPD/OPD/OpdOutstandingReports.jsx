@@ -12,7 +12,6 @@ const tabs = [
   { key: "referral", label: "Referral Outstanding" },
 ];
 
-// Summary box component with gradients and richer colors
 const SummaryBox = ({ title, value, className }) => (
   <div
     className={`p-6 rounded-xl shadow-lg transform transition-transform hover:scale-105 text-white ${className}`}
@@ -70,11 +69,20 @@ const OpdOutstandingDashboard = () => {
   );
 
   const fetchData = async (tabKey) => {
+    const token = localStorage.getItem("authToken");
+
+    if (!token) {
+      setError((prev) => ({
+        ...prev,
+        [tabKey]: "Authorization token missing. Please login again.",
+      }));
+      return;
+    }
+
     setLoading((prev) => ({ ...prev, [tabKey]: true }));
     setError((prev) => ({ ...prev, [tabKey]: null }));
 
     try {
-      const token = localStorage.getItem("authToken");
       const res = await axios.get("/api/api/Admin/GetOPDOutstanding", {
         headers: {
           Authorization: `${token}`,
@@ -92,34 +100,17 @@ const OpdOutstandingDashboard = () => {
         }));
         setData((prev) => ({ ...prev, [tabKey]: [] }));
       } else {
-        switch (tabKey) {
-          case "category":
-            setData((prev) => ({
-              ...prev,
-              category: response.ResponsePacket.CategoryOutstanding || [],
-            }));
-            break;
-          case "department":
-            setData((prev) => ({
-              ...prev,
-              department: response.ResponsePacket.DepartmentOutstanding || [],
-            }));
-            break;
-          case "doctor":
-            setData((prev) => ({
-              ...prev,
-              doctor: response.ResponsePacket.DoctorOutstanding || [],
-            }));
-            break;
-          case "referral":
-            setData((prev) => ({
-              ...prev,
-              referral: response.ResponsePacket.ReferalOutstanding || [],
-            }));
-            break;
-          default:
-            break;
-        }
+        const mapping = {
+          category: "CategoryOutstanding",
+          department: "DepartmentOutstanding",
+          doctor: "DoctorOutstanding",
+          referral: "ReferalOutstanding",
+        };
+
+        setData((prev) => ({
+          ...prev,
+          [tabKey]: response.ResponsePacket[mapping[tabKey]] || [],
+        }));
       }
     } catch (err) {
       console.error(err);
@@ -133,22 +124,20 @@ const OpdOutstandingDashboard = () => {
     }
   };
 
-  // Handle tab change with fade transition
   const handleTabChange = (key) => {
     setFade(false);
     setTimeout(() => {
       setActiveTab(key);
+      if (data[key] === null) fetchData(key);
       setFade(true);
     }, 250);
   };
 
   useEffect(() => {
-    if (data[activeTab] === null) {
-      fetchData(activeTab);
-    }
-  }, [activeTab]);
+    fetchData(activeTab); // initial fetch only once
+  }, []);
 
-  const summaryData = data.category || [];
+  const summaryData = data[activeTab] || [];
   const totalAmount = summaryData.reduce(
     (acc, cur) => acc + (cur.Amount || 0),
     0
@@ -159,9 +148,18 @@ const OpdOutstandingDashboard = () => {
 
   return (
     <div className="max-w-6xl mx-auto max-l-screen mb-10 bg-slate-300 rounded-2xl shadow-xl pb-10">
-      <h1 className="text-4xl font-extrabold mb-12 text-center text-gray-900 tracking-tight">
+      <h1 className="text-4xl font-extrabold mb-8 text-center text-gray-900 tracking-tight">
         OPD Outstanding Dashboard
       </h1>
+
+      <div className="flex justify-end pr-10 mb-2">
+        <button
+          onClick={() => fetchData(activeTab)}
+          className="px-4 py-2 text-sm font-medium bg-indigo-500 text-white rounded-lg hover:bg-indigo-600 transition"
+        >
+          Refresh
+        </button>
+      </div>
 
       {/* Summary Boxes */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-8 max-l-screen mb-14 px-20">
@@ -187,12 +185,11 @@ const OpdOutstandingDashboard = () => {
         {tabs.map(({ key, label }) => (
           <button
             key={key}
-            className={`relative px-6 py-3 font-semibold text-lg rounded-full transition-colors duration-300
-              ${
-                activeTab === key
-                  ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/40"
-                  : "text-gray-700 hover:text-indigo-600 hover:bg-indigo-100"
-              }`}
+            className={`relative px-6 py-3 font-semibold text-lg rounded-full transition-colors duration-300 ${
+              activeTab === key
+                ? "bg-indigo-600 text-white shadow-lg shadow-indigo-500/40"
+                : "text-gray-700 hover:text-indigo-600 hover:bg-indigo-100"
+            }`}
             onClick={() => handleTabChange(key)}
           >
             {label}
@@ -215,8 +212,11 @@ const OpdOutstandingDashboard = () => {
         style={{ width: "100%" }}
       >
         {loading[activeTab] ? (
-          <div className="text-center py-16 text-gray-400 text-lg font-medium">
-            Loading {tabs.find((t) => t.key === activeTab)?.label}...
+          <div className="text-center py-16 text-gray-400 text-lg font-medium flex flex-col items-center gap-4">
+            <div className="animate-spin w-10 h-10 border-4 border-indigo-500 border-t-transparent rounded-full" />
+            <span>
+              Loading {tabs.find((t) => t.key === activeTab)?.label}...
+            </span>
           </div>
         ) : error[activeTab] ? (
           <div className="text-center py-14 text-red-600 font-semibold text-lg">
@@ -226,6 +226,7 @@ const OpdOutstandingDashboard = () => {
           <AgGridReact
             rowData={data[activeTab]}
             columnDefs={columnDefs}
+            getRowId={({ data }) => data.Name}
             pagination={true}
             paginationPageSize={10}
             paginationPageSizeSelector={[10, 20, 50, 100]}
