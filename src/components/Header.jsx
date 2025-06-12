@@ -31,7 +31,10 @@ export default function AppHeader({ toggleSidebar }) {
   };
 
   return (
-    <header className="bg-gradient-to-r from-gray-800 to-gray-600 w-full text-white shadow sticky top-0 z-50">
+    <header
+      className="bg-gradient-to-br from-sky-400 via-blue-600 to-indigo-800
+ text-white transition-all duration-300 shadow sticky top-0 z-50"
+    >
       <div className="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         {/* Left: Sidebar Toggle & Title */}
         <div className="flex items-center gap-4">
@@ -41,9 +44,7 @@ export default function AppHeader({ toggleSidebar }) {
           >
             <Bars3Icon className="h-6 w-6" />
           </button>
-          <h1 className="text-xl font-bold tracking-wide">
-            🏥 Hospital Dashboard
-          </h1>
+          <h3 className="text-xl  tracking-wide">🏥 Dashboard</h3>
         </div>
 
         {/* Right: Icons + Theme Switcher + Logout */}

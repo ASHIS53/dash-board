@@ -1,93 +1,87 @@
-import { useState, useEffect } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState } from "react";
+import { AtSymbolIcon, LockClosedIcon } from "@heroicons/react/24/outline";
 
-export default function UserLogin() {
-  const [username, setUsername] = useState("");
-  const [password, setPassword] = useState("");
-  const [error, setError] = useState(null);
-  const navigate = useNavigate();
+export default function LoginForm() {
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e) => {
+  const handleChange = (e) => {
+    setFormData((prev) => ({
+      ...prev,
+      [e.target.name]: e.target.value,
+    }));
+  };
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    setError(null);
+    setLoading(true);
 
-    const datas = {
-      Usercode: username,
-      Password: password,
-      DeviceToken: "",
-      DeviceMACId: "",
-    };
-
-    try {
-      const response = await fetch("/api/api/Home/Login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          CompName: "glob",
-          AuthPswd: "5AA37B2E90AF6EA983D2C68B330809BE",
-        },
-        body: JSON.stringify(datas),
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Login failed");
-      }
-
-      const data = await response.json();
-      if (data.ResponsePacket && data.ResponsePacket.Token) {
-        localStorage.setItem("authToken", data.ResponsePacket.Token);
-        navigate("/dashboard");
-      }
-    } catch (err) {
-      setError(err.message || "An error occurred");
-    }
+    // Simulate async login
+    setTimeout(() => {
+      setLoading(false);
+      console.log("Login Data:", formData);
+      alert("Logged in!");
+    }, 1500);
   };
 
   return (
-    <div className="min-h-screen w-screen flex items-center justify-center bg-gradient-to-br from-slate-100 to-slate-600 px-4">
-      <div className="bg-slate-100 shadow-xl rounded-2xl p-8 w-full max-w-md transition-all hover:scale-105  transform duration-300 shadow-md  border-t-4 border-gray-600">
-        <h2 className="text-3xl font-extrabold text-center text-gray-700 mb-6">
-          User Login
-        </h2>
-        <form onSubmit={handleLogin} className="space-y-5">
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">
-              Username
-            </label>
-            <input
-              type="text"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-              required
-            />
+    <div className="min-h-screen flex items-center justify-center bg-gray-100 px-4">
+      <div className="bg-white shadow-lg rounded-2xl w-full max-w-md p-8">
+        <h2 className="text-3xl font-bold text-gray-800 mb-2">Welcome Back</h2>
+        <p className="text-gray-500 mb-6">Login to your account</p>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Email */}
+          <div className="relative">
+            <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50 hover:bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-400 transition">
+              <AtSymbolIcon className="w-5 h-5 text-gray-400 mr-2" />
+              <input
+                type="email"
+                name="email"
+                placeholder="Email"
+                className="w-full bg-transparent outline-none"
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
-          <div>
-            <label className="block mb-1 text-sm font-medium text-gray-700">
-              Password
-            </label>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition"
-              required
-            />
+
+          {/* Password */}
+          <div className="relative">
+            <div className="flex items-center border rounded-lg px-3 py-2 bg-gray-50 hover:bg-gray-100 focus-within:ring-2 focus-within:ring-indigo-400 transition">
+              <LockClosedIcon className="w-5 h-5 text-gray-400 mr-2" />
+              <input
+                type="password"
+                name="password"
+                placeholder="Password"
+                className="w-full bg-transparent outline-none"
+                onChange={handleChange}
+                required
+              />
+            </div>
           </div>
+
+          {/* Button */}
           <button
             type="submit"
-            className="cursor-pointer w-full py-2 text-white bg-gray-600 rounded-lg font-semibold hover:bg-gray-800 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:ring-offset-2 transition duration-300 active:scale-95"
+            disabled={loading}
+            className={`w-full ${
+              loading ? "bg-green-400" : "bg-green-600 hover:bg-green-700"
+            } text-white font-semibold py-2 px-4 rounded-lg transition duration-300`}
           >
-            Sign In
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
-        {error && (
-          <div className="mt-5 p-4 bg-red-100 border border-red-300 text-red-800 rounded-lg text-sm whitespace-normal break-words">
-            {error}
-          </div>
-        )}
+        <div className="mt-4 text-sm text-center text-gray-500">
+          Don’t have an account?{" "}
+          <a href="#" className="text-indigo-600 hover:underline">
+            Register
+          </a>
+        </div>
       </div>
     </div>
   );

@@ -2,7 +2,13 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Layout from "./components/Layout";
 import UserLogin from "./components/UserLogin";
 import Dashboard from "./components/Dashboard";
-import Placeholder from "./components/Placeholder";
+import RegisteredPatients from "./components/RegisteredPatients";
+import "@syncfusion/ej2-base/styles/material.css";
+import "@syncfusion/ej2-react-grids/styles/material.css";
+import AddmitedPatient from "./Patient/AddmitedPatient";
+import OpdListAndDuePayments from "./OPD_IPD/OPD/OpdListAndDuePayments";
+import OpdDiscountsRefunds from "./OPD_IPD/OPD/OpdDiscountsRefunds";
+import OpdOutstandingReports from "./OPD_IPD/OPD/OpdOutstandingReports";
 
 function App() {
   return (
@@ -13,7 +19,11 @@ function App() {
 
         <Route element={<Layout />}>
           <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/placeholder" element={<Placeholder />} />
+          <Route path="/patients/registered" element={<RegisteredPatients />} />
+          <Route path="/patients/addmitted" element={<AddmitedPatient />} />
+          <Route path="/opd/list" element={<OpdListAndDuePayments />} />
+          <Route path="/opd/discounts" element={<OpdDiscountsRefunds />} />
+          <Route path="/opd/outstanding" element={<OpdOutstandingReports />} />
         </Route>
       </Routes>
     </BrowserRouter>
